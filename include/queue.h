@@ -25,12 +25,25 @@ typedef struct _Kyu *KyuPtr;
 
 struct Queue
 {
+	// Add new Item to last in queue
 	void (*enqueue)(QueuePtr self, char item);
+
+	// Remove the first item in queue
 	char (*dequeue)(QueuePtr self);
+
+	// Peek at the first item in queue
 	char (*peek)(QueuePtr self);
+
+	// Check if full
 	bool (*isFull)(QueuePtr self);
+
+	// Check if empty
 	bool (*isEmpty)(QueuePtr self);
+
+	// Get size of queue
 	unsigned int (*size)(QueuePtr self);
+
+	// The Queue
 	KyuPtr _kyu;
 };
 

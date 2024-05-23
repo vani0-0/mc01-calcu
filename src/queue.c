@@ -9,14 +9,15 @@
 */
 
 // FUNCTIONS Prototypes:
-void enqueue(QueuePtr self, char item);
-char dequeue(QueuePtr self);
-unsigned int sizeQueue(QueuePtr self);
-char peek(QueuePtr self);
-bool isQueueFull(QueuePtr self);
-bool isQueueEmpty(QueuePtr self);
 
-/* Internal representation of Kyu */
+void enqueue(QueuePtr self, char item); // Add an item to the queue
+char dequeue(QueuePtr self);			// Remove an item from the queue
+unsigned int sizeQueue(QueuePtr self);	// Get the current size of the queue
+char peek(QueuePtr self);				// Get the front item of the queue without removing it
+bool isQueueFull(QueuePtr self);		// Check if the queue is full
+bool isQueueEmpty(QueuePtr self);		// Check if the queue is empty
+
+// Struct representing the queue
 struct _Kyu
 {
 	unsigned int capacity; // Max size of queue
@@ -27,52 +28,55 @@ struct _Kyu
 
 // PRIVATE:
 
+// Create a new queue instance with the given capacity
 KyuPtr _createKyu(unsigned int capacity)
 {
-	KyuPtr kyu = malloc(sizeof *kyu);
-	if (kyu == NULL)
+	KyuPtr kyu = malloc(sizeof *kyu); // Allocate memory for the queue
+	if (kyu == NULL)				  // Check if memory allocation failed
 		return NULL;
 
-	kyu->data = malloc((sizeof *kyu->data) * capacity);
-	if (kyu->data == NULL)
+	kyu->data = malloc((sizeof *kyu->data) * capacity); // Allocate memory for the data array
+	if (kyu->data == NULL)								// Check if memory allocation failed
 	{
 		free(kyu);
 		return NULL;
 	}
 
 	kyu->capacity = capacity;
-	kyu->front = kyu->rear = -1; // set both front and rear to -1
+	kyu->front = kyu->rear = -1; // Initialize front and rear indices
 	return kyu;
 }
 
+// Add an item to the queue
 void _enqueue(KyuPtr kyu, char item)
 {
-	int updatedRear = (kyu->rear + 1) % kyu->capacity;
-	kyu->data[updatedRear] = item;
-	kyu->rear = updatedRear;
+	int updatedRear = (kyu->rear + 1) % kyu->capacity; // Calculate the new rear index
+	kyu->data[updatedRear] = item;					   // Add the item to the queue
+	kyu->rear = updatedRear;						   // Update the rear index
 }
 
+// Remove an item from the queue
 char _dequeue(KyuPtr kyu)
 {
-	int nextIndex = (kyu->front + 1) % kyu->capacity;
-	char item = kyu->data[nextIndex];
-
-	kyu->data[nextIndex] = 0;
-	kyu->front = nextIndex;
-
-	return item;
+	int nextIndex = (kyu->front + 1) % kyu->capacity; // Calculate the index of the next item
+	char item = kyu->data[nextIndex];				  // Get the next item
+	kyu->data[nextIndex] = 0;						  // Clear the dequeued item from the data array
+	kyu->front = nextIndex;							  // Update the front index
+	return item;									  // Return the dequeued item
 }
 
+// Get the front item of the queue without removing it
 char _peek(KyuPtr kyu)
 {
-	int nextIndex = (kyu->front + 1) % kyu->capacity;
-	return kyu->data[nextIndex];
+	int nextIndex = (kyu->front + 1) % kyu->capacity; // Calculate the index of the next item
+	return kyu->data[nextIndex];					  // Return the next item
 }
 
+// Get the current size of the queue
 unsigned int _sizeKyu(KyuPtr kyu)
 {
-	// Conditions:
-	bool justInitialized = kyu->front == -1 && kyu->rear == -1; // after initializing, front and rear are both set to -1.
+	// Conditions to check various scenarios of the queue
+	bool justInitialized = kyu->front == -1 && kyu->rear == -1;
 	bool isEqual = !justInitialized && kyu->front == kyu->rear;
 	bool rearIsWrapped = kyu->front > kyu->rear;
 
@@ -94,28 +98,30 @@ unsigned int _sizeKyu(KyuPtr kyu)
 }
 
 // PUBLIC:
-
+// Initialize a new queue with the given capacity
 QueuePtr initQueue(unsigned int capacity)
 {
-	QueuePtr instance = malloc(sizeof *instance);
+	QueuePtr instance = malloc(sizeof *instance); // Allocate memory for the queue instance
 	if (instance == NULL)
 		return NULL;
-	instance->_kyu = _createKyu(capacity);
+	instance->_kyu = _createKyu(capacity); // Create a new queue
 	if (instance->_kyu == NULL)
 	{
 		free(instance);
 		return NULL;
 	}
 
+	// Assign function pointers to public functions
 	instance->enqueue = &enqueue;
 	instance->dequeue = &dequeue;
 	instance->size = &sizeQueue;
 	instance->peek = &peek;
 	instance->isFull = &isQueueFull;
 	instance->isEmpty = &isQueueEmpty;
-	return instance;
+	return instance; // Return the initialized queue instance
 }
 
+// Add an item to the queue
 void enqueue(QueuePtr self, char item)
 {
 	if (isQueueFull(self))
@@ -127,6 +133,7 @@ void enqueue(QueuePtr self, char item)
 	_enqueue(self->_kyu, item);
 }
 
+// Remove an item from the queue
 char dequeue(QueuePtr self)
 {
 	if (isQueueEmpty(self))
@@ -138,6 +145,7 @@ char dequeue(QueuePtr self)
 	return _dequeue(self->_kyu);
 }
 
+// Get the front item of the queue without removing it
 char peek(QueuePtr self)
 {
 	if (isQueueEmpty(self))
@@ -149,16 +157,19 @@ char peek(QueuePtr self)
 	return _peek(self->_kyu);
 }
 
+// Check if the queue is full
 bool isQueueFull(QueuePtr self)
 {
 	return _sizeKyu(self->_kyu) == self->_kyu->capacity;
 }
 
+// Check if the queue is empty
 bool isQueueEmpty(QueuePtr self)
 {
 	return _sizeKyu(self->_kyu) == 0;
 }
 
+// Get the current size of the queue
 unsigned int sizeQueue(QueuePtr self)
 {
 	return _sizeKyu(self->_kyu);

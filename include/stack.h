@@ -19,9 +19,9 @@ typedef struct _Pile *PilePtr;
 struct Stack
 {
 	char *name;
-	void (*push)(StackPtr self, char item);
-	char (*pop)(StackPtr self);
-	char (*top)(StackPtr self);
+	void (*push)(StackPtr self, int item);
+	int (*pop)(StackPtr self);
+	int (*top)(StackPtr self);
 	bool (*isFull)(StackPtr self);
 	bool (*isEmpty)(StackPtr self);
 	unsigned int (*size)(StackPtr self);

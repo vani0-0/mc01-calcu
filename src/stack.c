@@ -12,9 +12,9 @@
 
 // FUNCTIONS Prototypes:
 
-void push(StackPtr self, char item);
-char pop(StackPtr self);
-char top(StackPtr self);
+void push(StackPtr self, int item);
+int pop(StackPtr self);
+int top(StackPtr self);
 bool isStackFull(StackPtr self);
 bool isStackEmpty(StackPtr self);
 unsigned int sizeStack(StackPtr self);
@@ -24,7 +24,7 @@ struct _Pile
 {
 	unsigned int capacity;
 	int top;
-	char *data;
+	int *data;
 };
 
 // PRIVATE:
@@ -46,22 +46,22 @@ PilePtr _createPile(unsigned int capacity)
 	return pile;
 }
 
-void _push(PilePtr pile, char item)
+void _push(PilePtr pile, int item)
 {
 	int nextIndex = pile->top + 1;
 	pile->data[nextIndex] = item;
 	pile->top = nextIndex;
 }
 
-char _pop(PilePtr pile)
+int _pop(PilePtr pile)
 {
 	int currentIndex = pile->top;
-	char item = pile->data[currentIndex];
+	int item = pile->data[currentIndex];
 	pile->top = currentIndex - 1;
 	return item;
 }
 
-char _top(PilePtr pile)
+int _top(PilePtr pile)
 {
 	int index = pile->top;
 	return pile->data[index];
@@ -99,7 +99,7 @@ StackPtr initStack(char *name, unsigned int capacity)
 	return instance;
 }
 
-void push(StackPtr self, char item)
+void push(StackPtr self, int item)
 {
 	if (isStackFull(self))
 	{
@@ -110,7 +110,7 @@ void push(StackPtr self, char item)
 	_push(self->_pile, item);
 }
 
-char pop(StackPtr self)
+int pop(StackPtr self)
 {
 	if (isStackEmpty(self))
 	{
@@ -121,7 +121,7 @@ char pop(StackPtr self)
 	return _pop(self->_pile);
 }
 
-char top(StackPtr self)
+int top(StackPtr self)
 {
 	if (isStackEmpty(self))
 	{

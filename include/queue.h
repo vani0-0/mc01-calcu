@@ -28,13 +28,13 @@ struct Queue
 	// Name of Queue
 	char *name;
 	// Add new Item to last in queue
-	void (*enqueue)(QueuePtr self, char item);
+	void (*enqueue)(QueuePtr self, int item);
 
 	// Remove the first item in queue
-	char (*dequeue)(QueuePtr self);
+	int (*dequeue)(QueuePtr self);
 
 	// Peek at the first item in queue
-	char (*peek)(QueuePtr self);
+	int (*peek)(QueuePtr self);
 
 	// Check if full
 	bool (*isFull)(QueuePtr self);

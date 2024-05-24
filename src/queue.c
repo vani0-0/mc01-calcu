@@ -11,12 +11,12 @@
 
 // FUNCTIONS Prototypes:
 
-void enqueue(QueuePtr self, char item); // Add an item to the queue
-char dequeue(QueuePtr self);			// Remove an item from the queue
-unsigned int sizeQueue(QueuePtr self);	// Get the current size of the queue
-char peek(QueuePtr self);				// Get the front item of the queue without removing it
-bool isQueueFull(QueuePtr self);		// Check if the queue is full
-bool isQueueEmpty(QueuePtr self);		// Check if the queue is empty
+void enqueue(QueuePtr self, int item); // Add an item to the queue
+int dequeue(QueuePtr self);			   // Remove an item from the queue
+unsigned int sizeQueue(QueuePtr self); // Get the current size of the queue
+int peek(QueuePtr self);			   // Get the front item of the queue without removing it
+bool isQueueFull(QueuePtr self);	   // Check if the queue is full
+bool isQueueEmpty(QueuePtr self);	   // Check if the queue is empty
 
 // Struct representing the queue
 struct _Kyu
@@ -24,7 +24,7 @@ struct _Kyu
 	unsigned int capacity; // Max size of queue
 	int front;			   // First in line
 	int rear;			   // Last in line
-	char *data;			   // Holds the data stored
+	int *data;			   // Holds the data stored // Changed to INT due to specific reasons
 };
 
 // PRIVATE:
@@ -49,7 +49,7 @@ KyuPtr _createKyu(unsigned int capacity)
 }
 
 // Add an item to the queue
-void _enqueue(KyuPtr kyu, char item)
+void _enqueue(KyuPtr kyu, int item)
 {
 	int updatedRear = (kyu->rear + 1) % kyu->capacity; // Calculate the new rear index
 	kyu->data[updatedRear] = item;					   // Add the item to the queue
@@ -57,17 +57,17 @@ void _enqueue(KyuPtr kyu, char item)
 }
 
 // Remove an item from the queue
-char _dequeue(KyuPtr kyu)
+int _dequeue(KyuPtr kyu)
 {
 	int nextIndex = (kyu->front + 1) % kyu->capacity; // Calculate the index of the next item
-	char item = kyu->data[nextIndex];				  // Get the next item
+	int item = kyu->data[nextIndex];				  // Get the next item
 	kyu->data[nextIndex] = 0;						  // Clear the dequeued item from the data array
 	kyu->front = nextIndex;							  // Update the front index
 	return item;									  // Return the dequeued item
 }
 
 // Get the front item of the queue without removing it
-char _peek(KyuPtr kyu)
+int _peek(KyuPtr kyu)
 {
 	int nextIndex = (kyu->front + 1) % kyu->capacity; // Calculate the index of the next item
 	return kyu->data[nextIndex];					  // Return the next item
@@ -127,7 +127,7 @@ QueuePtr initQueue(char *name, unsigned int capacity)
 }
 
 // Add an item to the queue
-void enqueue(QueuePtr self, char item)
+void enqueue(QueuePtr self, int item)
 {
 	if (isQueueFull(self))
 	{
@@ -139,7 +139,7 @@ void enqueue(QueuePtr self, char item)
 }
 
 // Remove an item from the queue
-char dequeue(QueuePtr self)
+int dequeue(QueuePtr self)
 {
 	if (isQueueEmpty(self))
 	{
@@ -151,7 +151,7 @@ char dequeue(QueuePtr self)
 }
 
 // Get the front item of the queue without removing it
-char peek(QueuePtr self)
+int peek(QueuePtr self)
 {
 	if (isQueueEmpty(self))
 	{

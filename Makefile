@@ -2,14 +2,16 @@ CC = gcc
 CFLAGS = -g -Wall
 SRC = src
 OBJ = obj
+BIN = bin
+
 SRCS = $(wildcard $(SRC)/*.c)
 OBJS = $(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(SRCS))
 
-BIN = app
+APP = $(BIN)/app
 
-all: $(BIN)
+all: $(APP)
 
-$(BIN): $(OBJS) $(OBJ)
+$(APP): $(OBJS) $(BIN)
 	$(CC) $(CFLAGS) $(OBJS) -o $@
 
 $(OBJ)/%.o: $(SRC)/%.c $(OBJ)
@@ -18,6 +20,9 @@ $(OBJ)/%.o: $(SRC)/%.c $(OBJ)
 $(OBJ):
 	mkdir -p $@
 
+$(BIN):
+	mkdir -p $@
+
 clean:
 	$(RM) -r $(OBJ)
-	$(RM) $(BIN)
+	$(RM) -r $(BIN)

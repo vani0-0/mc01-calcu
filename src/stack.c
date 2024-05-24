@@ -3,13 +3,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
-struct _Pile
-{
-	unsigned int capacity;
-	int top;
-	char *data;
-};
+/*
+	Private functions are functions that are only used inside the queue.c file.
+	Public functions are functions that can be used outisde the queue.c file.
+*/
+
+// FUNCTIONS Prototypes:
 
 void push(StackPtr self, char item);
 char pop(StackPtr self);
@@ -18,19 +19,15 @@ bool isStackFull(StackPtr self);
 bool isStackEmpty(StackPtr self);
 unsigned int sizeStack(StackPtr self);
 
-void _push(PilePtr pile, char item)
+// Struct representing the stack
+struct _Pile
 {
-}
+	unsigned int capacity;
+	int top;
+	char *data;
+};
 
-char _pop(PilePtr pile)
-{
-	return 0;
-}
-
-unsigned int _sizePile(PilePtr pile)
-{
-	return pile->top + 1;
-}
+// PRIVATE:
 
 PilePtr _createPile(unsigned int capacity)
 {
@@ -46,13 +43,45 @@ PilePtr _createPile(unsigned int capacity)
 
 	pile->capacity = capacity;
 	pile->top = -1;
+	return pile;
 }
 
-StackPtr initStack(unsigned int capacity)
+void _push(PilePtr pile, char item)
+{
+	int nextIndex = pile->top + 1;
+	pile->data[nextIndex] = item;
+	pile->top = nextIndex;
+}
+
+char _pop(PilePtr pile)
+{
+	int currentIndex = pile->top;
+	char item = pile->data[currentIndex];
+	pile->top = currentIndex - 1;
+	return item;
+}
+
+char _top(PilePtr pile)
+{
+	int index = pile->top;
+	return pile->data[index];
+}
+
+unsigned int _sizePile(PilePtr pile)
+{
+	return pile->top + 1;
+}
+
+// PUBLIC:
+
+StackPtr initStack(char *name, unsigned int capacity)
 {
 	StackPtr instance = malloc(sizeof *instance);
 	if (instance == NULL)
 		return NULL;
+
+	instance->name = malloc(strlen(name) + 1);
+	strcpy(instance->name, name);
 
 	instance->_pile = _createPile(capacity);
 	if (instance->_pile == NULL)
@@ -73,7 +102,10 @@ StackPtr initStack(unsigned int capacity)
 void push(StackPtr self, char item)
 {
 	if (isStackFull(self))
+	{
+		printf("%s is full\n", self->name);
 		return;
+	}
 
 	_push(self->_pile, item);
 }
@@ -81,7 +113,10 @@ void push(StackPtr self, char item)
 char pop(StackPtr self)
 {
 	if (isStackEmpty(self))
+	{
+		printf("%s is empty\n", self->name);
 		return 0;
+	}
 
 	return _pop(self->_pile);
 }
@@ -89,7 +124,12 @@ char pop(StackPtr self)
 char top(StackPtr self)
 {
 	if (isStackEmpty(self))
+	{
+		printf("%s is empty\n", self->name);
 		return 0;
+	}
+
+	return _top(self->_pile);
 }
 
 bool isStackFull(StackPtr self)

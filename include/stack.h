@@ -18,8 +18,9 @@ typedef struct _Pile *PilePtr;
 
 struct Stack
 {
+	char *name;
 	void (*push)(StackPtr self, char item);
-	char (*pop)(StackPtr self, char item);
+	char (*pop)(StackPtr self);
 	char (*top)(StackPtr self);
 	bool (*isFull)(StackPtr self);
 	bool (*isEmpty)(StackPtr self);
@@ -28,6 +29,6 @@ struct Stack
 	PilePtr _pile;
 };
 
-StackPtr initStack(unsigned int capacity);
+StackPtr initStack(char *name, unsigned int capacity);
 
 #endif // __STACK_H_INCLUDED

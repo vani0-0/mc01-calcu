@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
 	Private functions are functions that are only used inside the queue.c file.
@@ -99,11 +100,15 @@ unsigned int _sizeKyu(KyuPtr kyu)
 
 // PUBLIC:
 // Initialize a new queue with the given capacity
-QueuePtr initQueue(unsigned int capacity)
+QueuePtr initQueue(char *name, unsigned int capacity)
 {
 	QueuePtr instance = malloc(sizeof *instance); // Allocate memory for the queue instance
 	if (instance == NULL)
 		return NULL;
+
+	instance->name = malloc(strlen(name) + 1);
+	strcpy(instance->name, name);
+
 	instance->_kyu = _createKyu(capacity); // Create a new queue
 	if (instance->_kyu == NULL)
 	{
@@ -126,7 +131,7 @@ void enqueue(QueuePtr self, char item)
 {
 	if (isQueueFull(self))
 	{
-		printf("Queue is full\n");
+		printf("%s is full\n", self->name);
 		return;
 	}
 
@@ -138,7 +143,7 @@ char dequeue(QueuePtr self)
 {
 	if (isQueueEmpty(self))
 	{
-		printf("Queue is empty\n");
+		printf("%s is empty\n", self->name);
 		return 0;
 	}
 
@@ -150,7 +155,8 @@ char peek(QueuePtr self)
 {
 	if (isQueueEmpty(self))
 	{
-		printf("Queue is empty\n");
+		printf("%s is empty\n", self->name);
+
 		return 0;
 	}
 

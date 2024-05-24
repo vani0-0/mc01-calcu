@@ -7,3 +7,27 @@
  *
  *  Stack Library Header
  */
+
+#ifndef __STACK_H_INCLUDED
+#define __STACK_H_INCLUDED
+
+#define bool _Bool
+
+typedef struct Stack *StackPtr;
+typedef struct _Pile *PilePtr;
+
+struct Stack
+{
+	void (*push)(StackPtr self, char item);
+	char (*pop)(StackPtr self, char item);
+	char (*top)(StackPtr self);
+	bool (*isFull)(StackPtr self);
+	bool (*isEmpty)(StackPtr self);
+	unsigned int (*size)(StackPtr self);
+	// The Stack
+	PilePtr _pile;
+};
+
+StackPtr initStack(unsigned int capacity);
+
+#endif // __STACK_H_INCLUDED

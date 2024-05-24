@@ -25,6 +25,8 @@ typedef struct _Kyu *KyuPtr;
 
 struct Queue
 {
+	// Name of Queue
+	char *name;
 	// Add new Item to last in queue
 	void (*enqueue)(QueuePtr self, char item);
 
@@ -49,9 +51,10 @@ struct Queue
 
 /**
  * Initialize Queue operations and implement queue
+ * @param name the name of queue
  * @param capacity the maximum size of queue
  * @return QueuePtr
  */
-QueuePtr initQueue(unsigned int capacity);
+QueuePtr initQueue(char *name, unsigned int capacity);
 
 #endif // __QUEUE_H_INCLUDED

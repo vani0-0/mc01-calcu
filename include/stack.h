@@ -12,16 +12,16 @@
 #define __STACK_H_INCLUDED
 
 #define bool _Bool
+#define STRING_SIZE 8
 
 typedef struct Stack *StackPtr;
 typedef struct _Pile *PilePtr;
 
 struct Stack
 {
-	char *name;
-	void (*push)(StackPtr self, int item);
-	int (*pop)(StackPtr self);
-	int (*top)(StackPtr self);
+	void (*push)(StackPtr self, char *item);
+	char *(*pop)(StackPtr self);
+	char *(*top)(StackPtr self);
 	bool (*isFull)(StackPtr self);
 	bool (*isEmpty)(StackPtr self);
 	unsigned int (*size)(StackPtr self);
@@ -29,6 +29,6 @@ struct Stack
 	PilePtr _pile;
 };
 
-StackPtr initStack(char *name, unsigned int capacity);
+StackPtr initStack(unsigned int capacity);
 
 #endif // __STACK_H_INCLUDED

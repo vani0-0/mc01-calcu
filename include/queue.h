@@ -18,23 +18,21 @@
 #define __QUEUE_H_INCLUDED
 
 #define bool _Bool
-
+#define STRING_SIZE 8
 /* Pointer to Incomplete Type. */
 typedef struct Queue *QueuePtr;
 typedef struct _Kyu *KyuPtr;
 
 struct Queue
 {
-	// Name of Queue
-	char *name;
 	// Add new Item to last in queue
-	void (*enqueue)(QueuePtr self, int item);
+	void (*enqueue)(QueuePtr self, char *item);
 
 	// Remove the first item in queue
-	int (*dequeue)(QueuePtr self);
+	char *(*dequeue)(QueuePtr self);
 
 	// Peek at the first item in queue
-	int (*peek)(QueuePtr self);
+	char *(*peek)(QueuePtr self);
 
 	// Check if full
 	bool (*isFull)(QueuePtr self);
@@ -49,12 +47,13 @@ struct Queue
 	KyuPtr _kyu;
 };
 
+// FUNCTIONS Prototypes:
 /**
  * Initialize Queue operations and implement queue
  * @param name the name of queue
  * @param capacity the maximum size of queue
  * @return QueuePtr
  */
-QueuePtr initQueue(char *name, unsigned int capacity);
+QueuePtr initQueue(unsigned int capacity);
 
 #endif // __QUEUE_H_INCLUDED

@@ -1,12 +1,14 @@
+#include "../include/stack.h"
+#include "../include/queue.h"
+#include "../include/my_string.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
-#include "../include/stack.h"
-#include "../include/queue.h"
+#include <string.h>
 
 #define MAX 256
-#define WHITESPACE 32     // SPACE
 #define PLUS 43           // +
 #define MINUS 45          // -
 #define MULTIPLICATION 42 // *
@@ -27,69 +29,58 @@ int precedence(char c)
 
 int main()
 {
-    StackPtr stack = initStack("Stack", MAX);
-    QueuePtr queue = initQueue("Queue", MAX);
-    char infix[MAX];
-
-    printf("Enter an expression: ");
-    fgets(infix, sizeof(infix), stdin);
+    StackPtr operators = initStack(MAX);
+    QueuePtr postfix = initQueue(MAX);
+    char infix[MAX] = "8*(5^4+2)-6^2/(9*3)";
 
     int index = 0;
     bool inParenthesis = false;
-
-    while (infix[index] != 0)
+    while (infix[index] != '\0')
     {
-        char current = infix[index++];
+        const char current = infix[index++];
         if (isspace(current) || isblank(current))
-            continue;
+            continue; // ignore if space of blank
 
-        if (isalnum(current))
+        if (isdigit(current))
         {
-            queue->enqueue(queue, current);
+            int num = current - '0'; // '1'
+            postfix->enqueue(postfix, itoa(num));
         }
         else if (current == '(')
         {
-            stack->push(stack, current);
             inParenthesis = true;
         }
         else if (current == ')')
         {
-            while (!stack->isEmpty(stack) && stack->top(stack) != '(')
-            {
-                queue->enqueue(queue, stack->pop(stack));
-            }
-            stack->pop(stack); // disregard (
             inParenthesis = false;
         }
         else
         {
-            while (!stack->isEmpty(stack) && !inParenthesis)
+            while (!operators->isEmpty(operators) && !inParenthesis)
             {
-                bool currentHasLowPrio = precedence(current) <= precedence(stack->top(stack));
-                if (currentHasLowPrio)
-                    queue->enqueue(queue, stack->pop(stack));
+                if (precedence(current) <= precedence(operators->top(operators)[0]))
+                {
+                    postfix->enqueue(postfix, operators->pop(operators));
+                }
                 else
                     break;
             }
-            stack->push(stack, current);
+            char op[2] = {current, '\0'};
+            operators->push(operators, op);
         }
     }
 
-    while (!stack->isEmpty(stack))
+    while (!operators->isEmpty(operators))
     {
-        queue->enqueue(queue, stack->pop(stack));
+        postfix->enqueue(postfix, operators->pop(operators));
     }
 
-    while (!queue->isEmpty(queue))
+    while (!postfix->isEmpty(postfix))
     {
-        printf("%c", queue->dequeue(queue));
+        printf("%s", postfix->dequeue(postfix));
     }
 
-    free(stack);
-    free(queue);
+    free(postfix);
+    free(operators);
     return 0;
 }
-
-// 30 + 4 (4 - 2)
-// 30442-+
-//

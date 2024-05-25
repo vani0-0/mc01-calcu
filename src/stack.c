@@ -1,10 +1,9 @@
 #include "../include/stack.h"
+#include "../include/my_string.h"
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
-
 /*
 	Private functions are functions that are only used inside the queue.c file.
 	Public functions are functions that can be used outisde the queue.c file.
@@ -12,9 +11,9 @@
 
 // FUNCTIONS Prototypes:
 
-void push(StackPtr self, int item);
-int pop(StackPtr self);
-int top(StackPtr self);
+void push(StackPtr self, char *item);
+char *pop(StackPtr self);
+char *top(StackPtr self);
 bool isStackFull(StackPtr self);
 bool isStackEmpty(StackPtr self);
 unsigned int sizeStack(StackPtr self);
@@ -24,7 +23,7 @@ struct _Pile
 {
 	unsigned int capacity;
 	int top;
-	int *data;
+	char **data;
 };
 
 // PRIVATE:
@@ -34,7 +33,7 @@ PilePtr _createPile(unsigned int capacity)
 	PilePtr pile = malloc(sizeof *pile);
 	if (pile == NULL)
 		return NULL;
-	pile->data = malloc((sizeof *pile->data) * capacity);
+	pile->data = malloc(sizeof(char *) * capacity); // Allocate memory for the data array
 	if (pile->data == NULL)
 	{
 		free(pile);
@@ -46,25 +45,27 @@ PilePtr _createPile(unsigned int capacity)
 	return pile;
 }
 
-void _push(PilePtr pile, int item)
+void _push(PilePtr pile, char *item)
 {
 	int nextIndex = pile->top + 1;
-	pile->data[nextIndex] = item;
+	pile->data[nextIndex] = strdup(item);
 	pile->top = nextIndex;
 }
 
-int _pop(PilePtr pile)
+char *_pop(PilePtr pile)
 {
 	int currentIndex = pile->top;
-	int item = pile->data[currentIndex];
+	char *item = strdup(pile->data[currentIndex]);
 	pile->top = currentIndex - 1;
+	free(pile->data[currentIndex]);
 	return item;
 }
 
-int _top(PilePtr pile)
+char *_top(PilePtr pile)
 {
 	int index = pile->top;
-	return pile->data[index];
+	char *item = pile->data[index];
+	return item;
 }
 
 unsigned int _sizePile(PilePtr pile)
@@ -74,14 +75,11 @@ unsigned int _sizePile(PilePtr pile)
 
 // PUBLIC:
 
-StackPtr initStack(char *name, unsigned int capacity)
+StackPtr initStack(unsigned int capacity)
 {
 	StackPtr instance = malloc(sizeof *instance);
 	if (instance == NULL)
 		return NULL;
-
-	instance->name = malloc(strlen(name) + 1);
-	strcpy(instance->name, name);
 
 	instance->_pile = _createPile(capacity);
 	if (instance->_pile == NULL)
@@ -99,35 +97,26 @@ StackPtr initStack(char *name, unsigned int capacity)
 	return instance;
 }
 
-void push(StackPtr self, int item)
+void push(StackPtr self, char *item)
 {
 	if (isStackFull(self))
-	{
-		printf("%s is full\n", self->name);
 		return;
-	}
 
 	_push(self->_pile, item);
 }
 
-int pop(StackPtr self)
+char *pop(StackPtr self)
 {
 	if (isStackEmpty(self))
-	{
-		printf("%s is empty\n", self->name);
-		return 0;
-	}
+		return NULL;
 
 	return _pop(self->_pile);
 }
 
-int top(StackPtr self)
+char *top(StackPtr self)
 {
 	if (isStackEmpty(self))
-	{
-		printf("%s is empty\n", self->name);
-		return 0;
-	}
+		return NULL;
 
 	return _top(self->_pile);
 }

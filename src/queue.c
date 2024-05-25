@@ -1,22 +1,17 @@
 #include "../include/queue.h"
-#include <stdio.h>
+#include "../include/my_string.h"
+
+#include <ctype.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
-/*
-	Private functions are functions that are only used inside the queue.c file.
-	Public functions are functions that can be used outisde the queue.c file.
-*/
-
-// FUNCTIONS Prototypes:
-
-void enqueue(QueuePtr self, int item); // Add an item to the queue
-int dequeue(QueuePtr self);			   // Remove an item from the queue
-unsigned int sizeQueue(QueuePtr self); // Get the current size of the queue
-int peek(QueuePtr self);			   // Get the front item of the queue without removing it
-bool isQueueFull(QueuePtr self);	   // Check if the queue is full
-bool isQueueEmpty(QueuePtr self);	   // Check if the queue is empty
+void enqueue(QueuePtr self, char *item); // Add an item to the queue
+char *dequeue(QueuePtr self);			 // Remove an item from the queue
+char *peek(QueuePtr self);				 // Get the front item of the queue without removing it
+bool isQueueFull(QueuePtr self);		 // Check if the queue is full
+bool isQueueEmpty(QueuePtr self);		 // Check if the queue is empty
+unsigned int sizeQueue(QueuePtr self);	 // Get the current size of the queue
 
 // Struct representing the queue
 struct _Kyu
@@ -24,141 +19,142 @@ struct _Kyu
 	unsigned int capacity; // Max size of queue
 	int front;			   // First in line
 	int rear;			   // Last in line
-	int *data;			   // Holds the data stored // Changed to INT due to specific reasons
+	char **data;		   // Holds the data stored // Changed to INT due to specific reasons
 };
-
-// PRIVATE:
 
 // Create a new queue instance with the given capacity
 KyuPtr _createKyu(unsigned int capacity)
 {
-	KyuPtr kyu = malloc(sizeof *kyu); // Allocate memory for the queue
-	if (kyu == NULL)				  // Check if memory allocation failed
+	// Allocate enough space for queue.
+	KyuPtr kyu = malloc(sizeof *kyu);
+	if (kyu == NULL)
 		return NULL;
 
-	kyu->data = malloc((sizeof *kyu->data) * capacity); // Allocate memory for the data array
-	if (kyu->data == NULL)								// Check if memory allocation failed
-	{
-		free(kyu);
+	kyu->data = malloc(sizeof(char *) * capacity);
+	if (kyu->data == NULL)
 		return NULL;
-	}
 
+	// Initialize capacity, front and rear.
 	kyu->capacity = capacity;
-	kyu->front = kyu->rear = -1; // Initialize front and rear indices
+	kyu->front = kyu->rear = -1;
 	return kyu;
 }
 
 // Add an item to the queue
-void _enqueue(KyuPtr kyu, int item)
+void _enqueue(KyuPtr kyu, char *item)
 {
-	int updatedRear = (kyu->rear + 1) % kyu->capacity; // Calculate the new rear index
-	kyu->data[updatedRear] = item;					   // Add the item to the queue
-	kyu->rear = updatedRear;						   // Update the rear index
+	// Calculate the rear with the circular queue.
+	int updatedRear = (kyu->rear + 1) % kyu->capacity;
+
+	// update rear
+	kyu->rear = updatedRear;
+
+	// pass the string to data
+	kyu->data[updatedRear] = strdup(item);
 }
 
 // Remove an item from the queue
-int _dequeue(KyuPtr kyu)
+char *_dequeue(KyuPtr kyu)
 {
-	int nextIndex = (kyu->front + 1) % kyu->capacity; // Calculate the index of the next item
-	int item = kyu->data[nextIndex];				  // Get the next item
-	kyu->data[nextIndex] = 0;						  // Clear the dequeued item from the data array
-	kyu->front = nextIndex;							  // Update the front index
-	return item;									  // Return the dequeued item
+	// Calculate the front with the circular queue
+	int updatedFront = (kyu->front + 1) % kyu->capacity;
+
+	// update front
+	kyu->front = updatedFront;
+
+	// pass the copy of data to variable
+	char *data = strdup(kyu->data[updatedFront]);
+
+	// free the allocated space
+	free(kyu->data[updatedFront]);
+
+	// set it to NULL
+	kyu->data[updatedFront] = NULL;
+
+	return data;
 }
 
 // Get the front item of the queue without removing it
-int _peek(KyuPtr kyu)
+char *_peek(KyuPtr kyu)
 {
-	int nextIndex = (kyu->front + 1) % kyu->capacity; // Calculate the index of the next item
-	return kyu->data[nextIndex];					  // Return the next item
+	// Calculate the front using circular queue
+	int currentFront = (kyu->front + 1) % kyu->capacity;
+
+	// get the data
+	char *data = kyu->data[currentFront];
+
+	return data;
 }
 
 // Get the current size of the queue
 unsigned int _sizeKyu(KyuPtr kyu)
 {
-	// Conditions to check various scenarios of the queue
 	bool justInitialized = kyu->front == -1 && kyu->rear == -1;
-	bool isEqual = !justInitialized && kyu->front == kyu->rear;
-	bool rearIsWrapped = kyu->front > kyu->rear;
+	bool isEqual = kyu->rear == kyu->front && kyu->front != -1;
+	bool isWrapped = kyu->front > kyu->rear;
 
 	if (justInitialized)
 		return 0;
-
 	if (isEqual)
 	{
-		bool isItemEmpty = _peek(kyu) == 0;
-		return isItemEmpty ? 0 : kyu->capacity;
+		bool isEmpty = _peek(kyu) == NULL;
+		return isEmpty ? 0 : kyu->capacity;
 	}
 	else
 	{
-		if (rearIsWrapped)
+		if (isWrapped)
 			return (kyu->capacity - kyu->front) + kyu->rear;
 		else
 			return kyu->rear - kyu->front;
 	}
 }
 
-// PUBLIC:
 // Initialize a new queue with the given capacity
-QueuePtr initQueue(char *name, unsigned int capacity)
+QueuePtr initQueue(unsigned int capacity)
 {
-	QueuePtr instance = malloc(sizeof *instance); // Allocate memory for the queue instance
+	QueuePtr instance = malloc(sizeof *instance);
 	if (instance == NULL)
 		return NULL;
 
-	instance->name = malloc(strlen(name) + 1);
-	strcpy(instance->name, name);
-
-	instance->_kyu = _createKyu(capacity); // Create a new queue
+	instance->_kyu = _createKyu(capacity);
 	if (instance->_kyu == NULL)
 	{
 		free(instance);
 		return NULL;
 	}
 
-	// Assign function pointers to public functions
 	instance->enqueue = &enqueue;
 	instance->dequeue = &dequeue;
-	instance->size = &sizeQueue;
 	instance->peek = &peek;
-	instance->isFull = &isQueueFull;
 	instance->isEmpty = &isQueueEmpty;
-	return instance; // Return the initialized queue instance
+	instance->isFull = &isQueueFull;
+	instance->size = &sizeQueue;
+	return instance;
 }
 
 // Add an item to the queue
-void enqueue(QueuePtr self, int item)
+void enqueue(QueuePtr self, char *item)
 {
 	if (isQueueFull(self))
-	{
-		printf("%s is full\n", self->name);
 		return;
-	}
-
+		
 	_enqueue(self->_kyu, item);
 }
 
 // Remove an item from the queue
-int dequeue(QueuePtr self)
+char *dequeue(QueuePtr self)
 {
 	if (isQueueEmpty(self))
-	{
-		printf("%s is empty\n", self->name);
-		return 0;
-	}
+		return NULL;
 
 	return _dequeue(self->_kyu);
 }
 
 // Get the front item of the queue without removing it
-int peek(QueuePtr self)
+char *peek(QueuePtr self)
 {
 	if (isQueueEmpty(self))
-	{
-		printf("%s is empty\n", self->name);
-
-		return 0;
-	}
+		return NULL;
 
 	return _peek(self->_kyu);
 }
